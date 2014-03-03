@@ -1,5 +1,9 @@
 # coding: utf-8
+# copyright 2014 tshirtman
+# distributed under the GPL licence
+
 from __future__ import division
+
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.properties import ListProperty, NumericProperty, StringProperty
@@ -7,6 +11,8 @@ from kivy.clock import Clock
 from kivy.config import Config
 from ConfigParser import NoOptionError
 from os.path import join
+
+__version__ = '0.1'
 
 Config.setdefaults('Kpritz', {
     'speed': 260,
