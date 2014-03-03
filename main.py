@@ -39,7 +39,7 @@ BoxLayout:
         text:
             '%d / %d (%2d%%)' % (
             app.position, len(app.text),
-            100. * app.position / len(app.text))
+            100. * app.position / len(app.text)) if app.text else ''
         size_hint_y: None
         height: self.texture_size[1]
 
@@ -98,9 +98,9 @@ BoxLayout:
             id: fc
 
         BoxLayout:
+            size_hint_y: None
+            height: '30sp'
             Button:
-                size_hint_y: None
-                height: '30sp'
                 text: 'open'
                 disabled: not fc.selection
                 on_press:
@@ -121,9 +121,9 @@ BoxLayout:
             id: fc
 
         BoxLayout:
+            size_hint_y: None
+            height: '30sp'
             Button:
-                size_hint_y: None
-                height: '30sp'
                 text: 'select current dir as default path'
                 on_press:
                     app.default_path = abspath(fc.path)
@@ -191,7 +191,7 @@ BoxLayout:
     source: ''
     Image:
         center: root.center
-        source: join('data', root.source)
+        source: join('data', root.source) if root.source else ''
         size: root.size
 
 <ColoredLabel@Label>:
@@ -221,7 +221,10 @@ class Kpritz(App):
 
     def build(self):
         if self.bookname:
-            self.open('', self.bookname)
+            try:
+                self.open('', self.bookname)
+            except IOError:
+                self.bookname = ''
 
         root = Builder.load_string(KV)
         return root
