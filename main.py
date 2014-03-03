@@ -33,9 +33,9 @@ KV = '''
 
 <WordPart@ColoredLabel>:
     size_hint: None, None
-    size: self.texture_size
-    center_y: self.parent.center_y
+    size: root.texture_size
     font_size: '%dpt' % app.text_size
+    center_y: self.parent.center_y
 
 BoxLayout:
     orientation: 'vertical'
@@ -43,23 +43,22 @@ BoxLayout:
     index: int(log10(len(self.word) + 1) * 2.5)
 
     FloatLayout:
+        id: label_container
         WordPart:
-            right: center_label.x
+            x: center_label.x - self.width
             text: root.word[:root.index]
 
         WordPart:
             id: center_label
-            center_x: self.parent.center_x
+            x: label_container.width / 3
             text: root.word[root.index]
             color: app.hl_color
 
         WordPart:
             x: center_label.right
             text:
-                (
-                root.word[root.index + 1:]
-                if len(root.word) > root.index else ''
-                )
+                (root.word[root.index + 1:]
+                if len(root.word) > root.index else '')
 
     ColoredLabel:
         text:
