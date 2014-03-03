@@ -19,6 +19,7 @@ Config.setdefaults('Kpritz', {
     'lastbook': '',
     'bg_color': '1 1 1 1',
     'fg_color': '0 0 0 1',
+    'hl_color': '1 0 0 1',
     'text_size': '100',
     'default_path': '.',
     })
@@ -27,13 +28,38 @@ KV = '''
 #:import Factory kivy.factory.Factory
 #:import join os.path.join
 #:import abspath os.path.abspath
+#:import log10 math.log10
+#:import get_hex_from_color kivy.utils.get_hex_from_color
+
+<WordPart@ColoredLabel>:
+    size_hint: None, None
+    size: self.texture_size
+    center_y: self.parent.center_y
+    font_size: '%dpt' % app.text_size
+
 BoxLayout:
     orientation: 'vertical'
-    ColoredLabel:
-        text: app.text[app.position] if app.text else ''
-        font_size: '%dpt' % app.text_size
-        halign: 'left'
-        text_size: self.width, None
+    word: unicode(app.text[app.position] if app.text else '', 'utf-8')
+    index: int(log10(len(self.word) + 1) * 2.5)
+
+    FloatLayout:
+        WordPart:
+            right: center_label.x
+            text: root.word[:root.index]
+
+        WordPart:
+            id: center_label
+            center_x: self.parent.center_x
+            text: root.word[root.index]
+            color: app.hl_color
+
+        WordPart:
+            x: center_label.right
+            text:
+                (
+                root.word[root.index + 1:]
+                if len(root.word) > root.index else ''
+                )
 
     ColoredLabel:
         text:
@@ -168,6 +194,13 @@ BoxLayout:
             on_color: app.fg_color = self.color
 
         Label:
+            text: 'highlight color'
+
+        ColorPicker:
+            color: app.hl_color
+            on_color: app.hl_color = self.color
+
+        Label:
             size_hint_y: None
             height: '30sp'
             text: 'default path'
@@ -214,6 +247,8 @@ class Kpritz(App):
         map(float, Config.get('Kpritz', 'bg_color').split()))
     fg_color = ListProperty(
         map(float, Config.get('Kpritz', 'fg_color').split()))
+    hl_color = ListProperty(
+        map(float, Config.get('Kpritz', 'hl_color').split()))
     text_size = NumericProperty(Config.getfloat('Kpritz', 'text_size'))
     default_path = StringProperty(Config.get('Kpritz', 'default_path'))
     text = ListProperty([])
@@ -299,6 +334,9 @@ class Kpritz(App):
 
     def on_fg_color(self, *args):
         Config.set('Kpritz', 'fg_color', ' '.join(map(str, self.fg_color)))
+
+    def on_hl_color(self, *args):
+        Config.set('Kpritz', 'hl_color', ' '.join(map(str, self.hl_color)))
 
     def on_text_size(self, *args):
         Config.set('Kpritz', 'text_size', self.text_size)
