@@ -259,7 +259,7 @@ BoxLayout:
                 text: root.message
 '''
 
-SENTENCE_END = ('.', '!', '?', '...', '…', ':')
+SENTENCE_END = (u'.', 'u!', u'?', u'...', u'…', u':')
 
 
 class Kpritz(App):
@@ -289,6 +289,24 @@ class Kpritz(App):
     def save_position(self):
         Config.set('Kpritz', self.bookname, self.position)
 
+    def get_words(self, f):
+        if f.endswith('.epub'):
+            return dump(f).split()
+
+        elif f.endswith('.html'):
+            h = html2text.HTML2Text()
+            h.ignore_links = True
+            h.unicode_snob = True
+            h.ignore_images = True
+            h.ignore_emphasis = True
+            h.skip_internal_links = True
+            with open(f) as fd:
+                return h.handle(fd.read()).split()
+
+        else:
+            with open(f) as fd:
+                return fd.read().split()
+
     def open(self, path, filename):
         if self.position:
             self.save_position()
@@ -298,24 +316,7 @@ class Kpritz(App):
         self.bookname = f
 
         try:
-            if f.endswith('.epub'):
-                self.text = dump(f).split()
-
-            elif f.endswith('.html'):
-                h = html2text.HTML2Text()
-                h.ignore_links = True
-                h.unicode_snob = True
-                h.ignore_images = True
-                h.ignore_emphasis = True
-                h.skip_internal_links = True
-                with open(f) as fd:
-                    self.text = h.handle(fd.read()).split()
-
-            else:
-                with open(f) as fd:
-                    self.text = [
-                        unicode(w, 'utf-8') for w in
-                        fd.read().split()]
+            self.text = [unicode(w, 'utf-8') for w in self.get_words(f)]
 
         except Exception, e:
             p = Factory.ErrorPopup().open()
