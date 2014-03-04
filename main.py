@@ -9,8 +9,11 @@ from kivy.lang import Builder
 from kivy.properties import ListProperty, NumericProperty, StringProperty
 from kivy.clock import Clock
 from kivy.config import Config
+from kivy.factory import Factory
 from ConfigParser import NoOptionError
 from os.path import join
+from epub2txt import dump
+import html2text
 
 __version__ = '0.1'
 
@@ -39,19 +42,19 @@ KV = '''
 
 BoxLayout:
     orientation: 'vertical'
-    word: unicode(app.text[app.position] if app.text else '', 'utf-8')
+    word: app.text[app.position] if app.text else ''
     index: int(log10(len(self.word) + 1) * 2.5)
 
     FloatLayout:
         id: label_container
         WordPart:
             x: center_label.x - self.width
-            text: root.word[:root.index]
+            text: root.word[:root.index] if app.text else ''
 
         WordPart:
             id: center_label
             x: label_container.width / 3
-            text: root.word[root.index]
+            text: root.word[root.index] if app.text else ''
             color: app.hl_color
 
         WordPart:
@@ -234,6 +237,26 @@ BoxLayout:
             pos: self.pos
             size: self.size
     color: app.fg_color
+
+<ErrorPopup@Popup>:
+    title: 'unable to load book'
+    size_hint: .9, .9
+    message: ''
+
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            size_hint_y: None
+            height: self.height
+            text_size: self.width, None
+            text: 'Error message was:'
+
+        ScrollView:
+            Label:
+                size_hint_y: None
+                height: self.height
+                text_size: self.width, None
+                text: root.message
 '''
 
 SENTENCE_END = ('.', '!', '?', '...', '…', ':')
@@ -254,13 +277,13 @@ class Kpritz(App):
     position = NumericProperty(0)
 
     def build(self):
+        root = Builder.load_string(KV)
         if self.bookname:
             try:
                 self.open('', self.bookname)
             except IOError:
                 self.bookname = ''
 
-        root = Builder.load_string(KV)
         return root
 
     def save_position(self):
@@ -274,8 +297,29 @@ class Kpritz(App):
         Config.set('Kpritz', 'lastbook', f)
         self.bookname = f
 
-        with open(f) as fd:
-            self.text = fd.read().split()
+        try:
+            if f.endswith('.epub'):
+                self.text = dump(f).split()
+
+            elif f.endswith('.html'):
+                h = html2text.HTML2Text()
+                h.ignore_links = True
+                h.unicode_snob = True
+                h.ignore_images = True
+                h.ignore_emphasis = True
+                h.skip_internal_links = True
+                with open(f) as fd:
+                    self.text = h.handle(fd.read()).split()
+
+            else:
+                with open(f) as fd:
+                    self.text = [
+                        unicode(w, 'utf-8') for w in
+                        fd.read().split()]
+
+        except Exception, e:
+            p = Factory.ErrorPopup().open()
+            p.message = str(e)
 
         try:
             self.position = Config.getint('Kpritz', f)
@@ -286,8 +330,9 @@ class Kpritz(App):
         self._next()
 
     def _next(self, *args):
-        self.position += 1
-        Clock.schedule_once(self._next, 60 / self.speed)
+        if self.position + 1 < len(self.text):
+            self.position += 1
+            Clock.schedule_once(self._next, 60 / self.speed)
 
     def pause(self, *args):
         Clock.unschedule(self._next)
