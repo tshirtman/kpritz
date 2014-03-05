@@ -8,7 +8,7 @@
 <WordPart@ColoredLabel>:
     size_hint: None, None
     size: root.texture_size
-    font_size: '%dpt' % app.config.getfloat('settings', 'text_size') or app.c
+    font_size: '%dpt' % app.config .getfloat('settings', 'text_size')
     center_y: self.parent.center_y
 
 BoxLayout:
@@ -26,7 +26,7 @@ BoxLayout:
             id: center_label
             x: label_container.width / 3
             text: root.word[root.index] if app.text else ''
-            color: color_from_hex(app.config.get('settings', 'hl_color')) or app.c
+            color: color_from_hex(app.config .get('settings', 'hl_color'))
 
         WordPart:
             x: center_label.right
@@ -73,17 +73,17 @@ BoxLayout:
             source: 'faster.png'
             on_press:
                 app.config.set(
-                'settings', 'speed', app.config.getint('settings', 'speed') + 10)
-            disabled: app.config.getint('settings', 'speed') == 990 and app.c
+                'settings', 'speed', app.config .getint('settings', 'speed') + 10)
+            disabled: app.config .getint('settings', 'speed') == 990
         ImageButton:
             source: 'slower.png'
             on_press:
                 app.config.set(
-                'settings', 'speed', app.config.getint('settings', 'speed') - 10)
+                'settings', 'speed', app.config .getint('settings', 'speed') - 10)
             disabled:
-                app.config.getint('settings', 'speed') == 10 and app.c
+                app.config .getint('settings', 'speed') == 10
         Label:
-            text: '%3d wpm' % app.config.getint('settings', 'speed') or app.c
+            text: '%3d wpm' % app.config .getint('settings', 'speed')
             size_hint_x: None
             width: self.texture_size[0]
 
@@ -98,7 +98,7 @@ BoxLayout:
     BoxLayout:
         orientation: 'vertical'
         FileChooserListView:
-            path: app.config.get('settings', 'default_path') or app.c
+            path: app.config .get('settings', 'default_path')
             id: fc
 
         BoxLayout:
@@ -121,7 +121,7 @@ BoxLayout:
     BoxLayout:
         orientation: 'vertical'
         FileChooserListView:
-            path: app.config.get('settings', 'default_path') or app.c
+            path: app.config .get('settings', 'default_path')
             id: fc
 
         BoxLayout:
@@ -146,8 +146,8 @@ BoxLayout:
         Color:
             rgba:
                 color_from_hex(
-                app.config.get('settings', self.target)
-                ) if self.target else (0, 0, 0, 0) or app.c
+                app.config .get('settings', self.target)
+                ) if self.target else (0, 0, 0, 0)
         Rectangle:
             size: self.width - 4, self.height - 4
             pos: self.x + 2, self.y + 2
@@ -202,7 +202,7 @@ BoxLayout:
             height: '30sp'
             min: 10
             max: 500
-            value: app.config.getfloat('settings', 'text_size') or app.c
+            value: app.config .getfloat('settings', 'text_size')
             on_value: app.config.set('settings', 'text_size', self.value)
 
         SettingsLabel:
@@ -230,7 +230,7 @@ BoxLayout:
         Button:
             size_hint_y: None
             height: '30sp'
-            text: app.config.get('settings', 'default_path') or app.c
+            text: app.config .get('settings', 'default_path')
             on_press: Factory.PathSelector().open()
 
         Widget:
@@ -256,11 +256,11 @@ BoxLayout:
 <ColoredLabel@Label>:
     canvas.before:
         Color:
-            rgba: color_from_hex(app.config.get('settings', 'bg_color')) or app.c
+            rgba: color_from_hex(app.config .get('settings', 'bg_color'))
         Rectangle:
             pos: self.pos
             size: self.size
-    color: color_from_hex(app.config.get('settings', 'fg_color')) or app.c
+    color: color_from_hex(app.config .get('settings', 'fg_color'))
 
 <ErrorPopup@Popup>:
     title: 'unable to load book'

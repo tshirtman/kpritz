@@ -5,7 +5,8 @@
 from __future__ import division
 
 from kivy.app import App
-from kivy.properties import ListProperty, NumericProperty, StringProperty
+from kivy.properties import (
+    ListProperty, NumericProperty, StringProperty, ObjectProperty)
 from kivy.clock import Clock
 from kivy.factory import Factory
 from ConfigParser import NoOptionError
@@ -22,7 +23,7 @@ class Kpritz(App):
     bookname = StringProperty('')
     text = ListProperty([])
     position = NumericProperty(0)
-    c = NumericProperty(0)
+    config = ObjectProperty(None)
 
     def build_config(self, config):
         config.setdefaults('settings', {
@@ -140,7 +141,7 @@ class Kpritz(App):
 
     def on_config_change(self, section, key, value):
         print "config change"
-        self.c += 1
+        self.property('config').dispatch(self)
         self.config.write()
 
     def on_stop(self, *args):
