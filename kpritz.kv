@@ -152,7 +152,9 @@ BoxLayout:
             size: self.width - 4, self.height - 4
             pos: self.x + 2, self.y + 2
     on_press:
-        Factory.ColorSelector(target=self.target).open()
+        s = Factory.ColorSelector()
+        s.target = self.target
+        s.open()
 
 <ColorSelector@Popup>:
     target: ''
@@ -164,8 +166,8 @@ BoxLayout:
             id: cp
             color:
                 color_from_hex(
-                app.config.get('settings', root.target)
-                ) if root.target else (0, 0, 0, 0) or app.c
+                app.config .get('settings', root.target)
+                ) if root.target else (0, 0, 0, 0)
 
         BoxLayout:
             size_hint_y: None
@@ -173,8 +175,7 @@ BoxLayout:
             Button:
                 text: 'ok'
                 on_press:
-                    t = root.target
-                    if t: app.config.set('settings', t,  hex_from_color(cp.color))
+                    root.target and app.config.set('settings', root.target,  hex_from_color(cp.color))
                     root.dismiss()
 
             Button:
