@@ -7,7 +7,6 @@ from __future__ import division
 from kivy.app import App
 from kivy.properties import ListProperty, NumericProperty, StringProperty
 from kivy.clock import Clock
-from kivy.config import Config
 from kivy.factory import Factory
 from ConfigParser import NoOptionError
 from os.path import join
@@ -16,47 +15,43 @@ import html2text
 
 __version__ = '0.1'
 
-Config.setdefaults('Kpritz', {
-    'speed': 260,
-    'lastbook': '',
-    'bg_color': '1 1 1 1',
-    'fg_color': '0 0 0 1',
-    'hl_color': '1 0 0 1',
-    'text_size': '100',
-    'default_path': '.',
-    })
-
 SENTENCE_END = (u'.', 'u!', u'?', u'...', u'…', u':')
 
 
 class Kpritz(App):
-    bookname = StringProperty(Config.get('Kpritz', 'lastbook'))
-    speed = NumericProperty(Config.getint('Kpritz', 'speed'))
-    bg_color = ListProperty(
-        map(float, Config.get('Kpritz', 'bg_color').split()))
-    fg_color = ListProperty(
-        map(float, Config.get('Kpritz', 'fg_color').split()))
-    hl_color = ListProperty(
-        map(float, Config.get('Kpritz', 'hl_color').split()))
-    text_size = NumericProperty(Config.getfloat('Kpritz', 'text_size'))
-    default_path = StringProperty(Config.get('Kpritz', 'default_path'))
+    bookname = StringProperty('')
     text = ListProperty([])
     position = NumericProperty(0)
+    c = NumericProperty(0)
+
+    def build_config(self, config):
+        config.setdefaults('settings', {
+            'speed': '250',
+            'lastbook': '',
+            'bg_color': '#000000FF',
+            'fg_color': '#FFFFFFFF',
+            'hl_color': '#FF0000FF',
+            'text_size': '100',
+            'default_path': self.user_data_dir,
+            })
+        config.add_section('books')
+        config.add_callback(self.on_config_change)
 
     def build(self):
         super(Kpritz, self).build()
-        if self.bookname:
-            try:
-                self.open('', self.bookname)
-            except IOError:
-                self.bookname = ''
+
+        Clock.schedule_once(
+            lambda *x: self.open(), 0)
 
         return self.root
 
     def save_position(self):
-        Config.set('Kpritz', self.bookname, self.position)
+        if self.bookname:
+            self.config.set('books', self.bookname, self.position)
 
-    def get_words(self, f):
+    def get_words(self):
+        f = self.bookname
+
         if f.endswith('.epub'):
             return dump(f).split()
 
@@ -74,23 +69,26 @@ class Kpritz(App):
             with open(f) as fd:
                 return fd.read().split()
 
-    def open(self, path, filename):
+    def open(self, path='', filename=None):
         if self.position:
             self.save_position()
 
-        f = join(path, filename)
-        Config.set('Kpritz', 'lastbook', f)
-        self.bookname = f
+        if filename:
+            f = join(path, filename)
+            self.config.set('settings', 'lastbook', f)
+            self.bookname = f
+        else:
+            self.bookname = self.config.get('settings', 'lastbook')
 
         try:
-            self.text = [unicode(w, 'utf-8') for w in self.get_words(f)]
+            self.text = [unicode(w, 'utf-8') for w in self.get_words()]
 
         except Exception, e:
             p = Factory.ErrorPopup().open()
             p.message = str(e)
 
         try:
-            self.position = Config.getint('Kpritz', f)
+            self.position = self.config.getint('books', self.bookname)
         except NoOptionError:
             self.position = 0
 
@@ -100,7 +98,9 @@ class Kpritz(App):
     def _next(self, *args):
         if self.position + 1 < len(self.text):
             self.position += 1
-            Clock.schedule_once(self._next, 60 / self.speed)
+            Clock.schedule_once(
+                self._next, 60 /
+                self.config.getint('settings', 'speed'))
 
     def pause(self, *args):
         Clock.unschedule(self._next)
@@ -132,33 +132,20 @@ class Kpritz(App):
                 break
 
     def on_pause(self, *args):
-        Config.write()
+        #self.config.write()
         return True
 
     def on_resume(self, *args):
         return True
 
-    def on_speed(self, *args):
-        Config.set('Kpritz', 'speed', self.speed)
-
-    def on_bg_color(self, *args):
-        Config.set('Kpritz', 'bg_color', ' '.join(map(str, self.bg_color)))
-
-    def on_fg_color(self, *args):
-        Config.set('Kpritz', 'fg_color', ' '.join(map(str, self.fg_color)))
-
-    def on_hl_color(self, *args):
-        Config.set('Kpritz', 'hl_color', ' '.join(map(str, self.hl_color)))
-
-    def on_text_size(self, *args):
-        Config.set('Kpritz', 'text_size', self.text_size)
-
-    def on_default_path(self, *args):
-        Config.set('Kpritz', 'default_path', self.default_path)
+    def on_config_change(self, section, key, value):
+        print "config change"
+        self.c += 1
+        self.config.write()
 
     def on_stop(self, *args):
         self.save_position()
-        Config.write()
+        self.config.write()
 
 
 if __name__ == '__main__':
