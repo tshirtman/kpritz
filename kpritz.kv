@@ -17,6 +17,12 @@ BoxLayout:
     index: int(log10(len(self.word) + 1) * 2.5)
 
     FloatLayout:
+        canvas.before:
+            Color:
+                rgba: color_from_hex(app.config .get('settings', 'bg_color'))
+            Rectangle:
+                pos: self.pos
+                size: self.size
         id: label_container
         WordPart:
             x: center_label.x - self.width
@@ -255,12 +261,6 @@ BoxLayout:
         size: root.size
 
 <ColoredLabel@Label>:
-    canvas.before:
-        Color:
-            rgba: color_from_hex(app.config .get('settings', 'bg_color'))
-        Rectangle:
-            pos: self.pos
-            size: self.size
     color: color_from_hex(app.config .get('settings', 'fg_color'))
 
 <ErrorPopup@Popup>:
