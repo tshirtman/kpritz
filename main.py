@@ -29,9 +29,9 @@ class Kpritz(App):
         config.setdefaults('settings', {
             'speed': '250',
             'lastbook': '',
-            'bg_color': '#000000FF',
-            'fg_color': '#FFFFFFFF',
-            'hl_color': '#FF0000FF',
+            'bg_color': '#000000ff',
+            'fg_color': '#ffffffff',
+            'hl_color': '#ff0000ff',
             'text_size': '100',
             'default_path': self.user_data_dir,
             })
