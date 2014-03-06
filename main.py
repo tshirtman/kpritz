@@ -84,7 +84,7 @@ class Kpritz(App):
         try:
             self.text = [unicode(w, 'utf-8') for w in self.get_words()]
 
-        except Exception, e:
+        except Exception as e:
             p = Factory.ErrorPopup().open()
             p.message = str(e)
 
@@ -140,7 +140,6 @@ class Kpritz(App):
         return True
 
     def on_config_change(self, section, key, value):
-        print "config change"
         self.property('config').dispatch(self)
         self.config.write()
 
