@@ -11,6 +11,10 @@
     font_size: '%dpt' % app.config .getfloat('settings', 'text_size')
     center_y: self.parent.center_y
 
+<ResponsiveGrid@BoxLayout>:
+    size_hint_x: 1 if app.vertical else 2
+    orientation: 'vertical' if app.vertical else 'horizontal'
+
 BoxLayout:
     orientation: 'vertical'
     word: app.text[app.position] if app.text else ''
@@ -50,44 +54,47 @@ BoxLayout:
 
     BoxLayout:
         size_hint_y: None
-        height: '30sp'
+        height: '100sp' if app.vertical else '60sp'
         ImageButton:
             source: 'open.png'
             on_press: Factory.OpenFile().open()
-        ImageButton:
-            source: 'previous_sentence.png'
-            on_press: app.previous_sentence()
-            disabled: app.position == 0
-        ImageButton:
-            source: 'previous.png'
-            on_press: app.previous()
-            disabled: app.position == 0
+        ResponsiveGrid:
+            ImageButton:
+                source: 'previous_sentence.png'
+                on_press: app.previous_sentence()
+                disabled: app.position == 0
+            ImageButton:
+                source: 'previous.png'
+                on_press: app.previous()
+                disabled: app.position == 0
         ImageButton:
             source: 'play.png'
             on_press: app.play()
             on_release: app.pause()
             disabled: app.position >= len(app.text)
-        ImageButton:
-            source: 'next.png'
-            on_press: app.next()
-            disabled: app.position == len(self.text)
-        ImageButton:
-            source: 'next_sentence.png'
-            on_press: app.next_sentence()
-            disabled: app.position == len(self.text)
-        ImageButton:
-            source: 'faster.png'
-            on_press:
-                app.config.set(
-                'settings', 'speed', app.config .getint('settings', 'speed') + 10)
-            disabled: app.config .getint('settings', 'speed') == 990
-        ImageButton:
-            source: 'slower.png'
-            on_press:
-                app.config.set(
-                'settings', 'speed', app.config .getint('settings', 'speed') - 10)
-            disabled:
-                app.config .getint('settings', 'speed') == 10
+        ResponsiveGrid:
+            ImageButton:
+                source: 'next.png'
+                on_press: app.next()
+                disabled: app.position == len(self.text)
+            ImageButton:
+                source: 'next_sentence.png'
+                on_press: app.next_sentence()
+                disabled: app.position == len(self.text)
+        ResponsiveGrid:
+            ImageButton:
+                source: 'faster.png'
+                on_press:
+                    app.config.set(
+                    'settings', 'speed', app.config .getint('settings', 'speed') + 10)
+                disabled: app.config .getint('settings', 'speed') == 990
+            ImageButton:
+                source: 'slower.png'
+                on_press:
+                    app.config.set(
+                    'settings', 'speed', app.config .getint('settings', 'speed') - 10)
+                disabled:
+                    app.config .getint('settings', 'speed') == 10
         Label:
             text: '%3d wpm' % app.config .getint('settings', 'speed')
             size_hint_x: None

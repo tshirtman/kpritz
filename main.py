@@ -6,7 +6,8 @@ from __future__ import division
 
 from kivy.app import App
 from kivy.properties import (
-    ListProperty, NumericProperty, StringProperty, ObjectProperty)
+    ListProperty, NumericProperty, StringProperty, ObjectProperty,
+    BooleanProperty)
 from kivy.clock import Clock
 from kivy.factory import Factory
 from ConfigParser import NoOptionError
@@ -24,6 +25,16 @@ class Kpritz(App):
     text = ListProperty([])
     position = NumericProperty(0)
     config = ObjectProperty(None)
+    root = ObjectProperty(None)
+
+    vertical = BooleanProperty(False)
+
+    def update_vertical(self, *args):
+        print "update vertical"
+        self.vertical = self.root and self.root.width < self.root.height
+
+    def on_root(self, *args):
+        self.root.bind(size=self.update_vertical)
 
     def build_config(self, config):
         config.setdefaults('settings', {
