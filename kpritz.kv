@@ -108,25 +108,48 @@ BoxLayout:
 <OpenFile@Popup>:
     title: 'Select a file'
     size_hint: .9, .9
-    BoxLayout:
-        orientation: 'vertical'
-        FileChooserListView:
-            path: app.config .get('settings', 'default_path')
-            id: fc
+    TabbedPanel:
+        do_default_tab: False
+        TabbedPanelItem:
+            text: 'Recent'
+            BoxLayout:
+                orientation: 'vertical'
+                ListView:
+                    data: []
+                BoxLayout:
+                    size_hint_y: None
+                    height: '30sp'
+                    Button:
+                        text: 'open'
+                        on_press:
+                            app.open(recent_list.selection)
+                    Button:
+                        text: 'cancel'
+                        on_press:
+                            root.dismiss()
+                            root.dismiss()
 
-        BoxLayout:
-            size_hint_y: None
-            height: '30sp'
-            Button:
-                text: 'open'
-                disabled: not fc.selection
-                on_press:
-                    app.open(fc.path, fc.selection[0])
-                    root.dismiss()
-            Button:
-                text: 'cancel'
-                on_press:
-                    root.dismiss()
+        TabbedPanelItem:
+            text: "Browse"
+            BoxLayout:
+                orientation: 'vertical'
+                FileChooserListView:
+                    path: app.config .get('settings', 'default_path')
+                    id: fc
+
+                BoxLayout:
+                    size_hint_y: None
+                    height: '30sp'
+                    Button:
+                        text: 'open'
+                        disabled: not fc.selection
+                        on_press:
+                            app.open(fc.path, fc.selection[0])
+                            root.dismiss()
+                    Button:
+                        text: 'cancel'
+                        on_press:
+                            root.dismiss()
 
 <PathSelector@Popup>:
     title: 'Select a default path'

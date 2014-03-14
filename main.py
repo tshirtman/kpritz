@@ -30,7 +30,6 @@ class Kpritz(App):
     vertical = BooleanProperty(False)
 
     def update_vertical(self, *args):
-        print "update vertical"
         self.vertical = self.root and self.root.width < self.root.height
 
     def on_root(self, *args):
