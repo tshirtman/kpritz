@@ -42,8 +42,12 @@ class Kpritz(App):
             'bg_color': '#000000ff',
             'fg_color': '#ffffffff',
             'hl_color': '#ff0000ff',
+            'context_color': '#ffffffff',
             'text_size': '100',
             'default_path': self.user_data_dir,
+            'show_context': True,
+            'context_lenght': 100,
+            'context_font_size': 20,
             })
         config.add_section('books')
         config.add_callback(self.on_config_change)

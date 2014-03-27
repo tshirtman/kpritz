@@ -4,6 +4,7 @@
 #:import log10 math.log10
 #:import hex_from_color kivy.utils.get_hex_from_color
 #:import color_from_hex kivy.utils.get_color_from_hex
+#:import abspath os.path.basename
 
 <WordPart@ColoredLabel>:
     size_hint: None, None
@@ -28,21 +29,55 @@ BoxLayout:
                 pos: self.pos
                 size: self.size
         id: label_container
+        Label:
+            canvas.before:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            size_hint: 1, None
+            text_size: self.width, None
+            font_size: app.config .getfloat('settings', 'context_font_size')
+            color: color_from_hex(app.config .get('settings', 'context_color'))
+            text:
+                ' '.join(
+                app.text[max(0, app.position - app.config .getint('settings', 'context_lenght')):app.position]
+                ) if app.config .getboolean('settings', 'show_context') else ''
+            y: center_label.top
+
         WordPart:
             x: center_label.x - self.width
             text: root.word[:root.index] if app.text else ''
 
         WordPart:
+            canvas.before:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
             id: center_label
-            x: label_container.width / 3
+            center_x: label_container.width / 3
+            center_y: root.center_y
             text: root.word[root.index] if app.text else ''
             color: color_from_hex(app.config .get('settings', 'hl_color'))
+            size_hint: None, None
+            width: self.texture_size[0]
+            height: self.texture_size[1]
 
         WordPart:
             x: center_label.right
             text:
                 (root.word[root.index + 1:]
                 if len(root.word) > root.index else '')
+
+        Label:
+            text_size: self.width, None
+            font_size: app.config .getfloat('settings', 'context_font_size')
+            color: color_from_hex(app.config .get('settings', 'context_color'))
+            text:
+                ' '.join(
+                app.text[app.position + 1:app.position + app.config .getint('settings', 'context_lenght')]
+                ) if app.config .getboolean('settings', 'show_context') else ''
+            top: center_label.y
+            size_hint: 1, None
 
     ColoredLabel:
         text:
@@ -110,25 +145,31 @@ BoxLayout:
     size_hint: .9, .9
     TabbedPanel:
         do_default_tab: False
-        TabbedPanelItem:
-            text: 'Recent'
-            BoxLayout:
-                orientation: 'vertical'
-                ListView:
-                    data: []
-                BoxLayout:
-                    size_hint_y: None
-                    height: '30sp'
-                    Button:
-                        text: 'open'
-                        on_press:
-                            app.open(recent_list.selection)
-                    Button:
-                        text: 'cancel'
-                        on_press:
-                            root.dismiss()
-                            root.dismiss()
-
+#        TabbedPanelItem:
+#            text: 'Recent'
+#            BoxLayout:
+#                orientation: 'vertical'
+#                ListView:
+#                    adapter:
+#                        Factory.ListAdapter(
+#                        cls=Factory.ToggleButton,
+#                        data=[{
+#                        'text': abspath(x),
+#                        'group': 'book',
+#                        } for x in app.config .options('books')])
+#                BoxLayout:
+#                    size_hint_y: None
+#                    height: '30sp'
+#                    Button:
+#                        text: 'open'
+#                        on_press:
+#                            app.open(recent_list.selection)
+#                    Button:
+#                        text: 'cancel'
+#                        on_press:
+#                            root.dismiss()
+#                            root.dismiss()
+#
         TabbedPanelItem:
             text: "Browse"
             BoxLayout:
@@ -150,7 +191,6 @@ BoxLayout:
                         text: 'cancel'
                         on_press:
                             root.dismiss()
-
 <PathSelector@Popup>:
     title: 'Select a default path'
     size_hint: .9, .9
@@ -269,6 +309,45 @@ BoxLayout:
             height: '30sp'
             text: app.config .get('settings', 'default_path')
             on_press: Factory.PathSelector().open()
+
+        SettingsLabel:
+            size_hint_y: None
+            height: '30sp'
+            text: 'show context'
+        Switch:
+            size_hint_y: None
+            height: '30sp'
+            active: app.config .getboolean('settings', 'show_context')
+            on_active: app.config.set('settings', 'show_context', self.active)
+        Label:
+            size_hint_y: None
+            height: '30sp'
+            text: 'context lenght: %.2f' % app.config .getint('settings', 'context_lenght')
+        Slider:
+            size_hint_y: None
+            height: '30sp'
+            min: 10
+            max: 200
+            value: app.config .getint('settings', 'context_lenght')
+            on_value: app.config.set('settings', 'context_lenght', int(self.value))
+            step: 1
+        Label:
+            size_hint_y: None
+            height: '30sp'
+            text: 'context font size: %.2f' % app.config .getfloat('settings', 'context_font_size')
+        Slider:
+            size_hint_y: None
+            height: '30sp'
+            min: 10
+            max: 50
+            value: app.config .getfloat('settings', 'context_font_size')
+            on_value: app.config.set('settings', 'context_font_size', self.value)
+
+        SettingsLabel:
+            text: 'context color'
+
+        ColorButton:
+            target: 'context_color'
 
         Widget:
         Widget:
