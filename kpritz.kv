@@ -51,10 +51,6 @@ BoxLayout:
             text: root.word[:root.index] if app.text else ''
 
         WordPart:
-            canvas.before:
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
             id: center_label
             center_x: label_container.width / 3
             center_y: root.center_y

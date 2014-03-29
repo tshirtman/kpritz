@@ -39,10 +39,10 @@ class Kpritz(App):
         config.setdefaults('settings', {
             'speed': '250',
             'lastbook': 'welcome.txt',
-            'bg_color': '#000000ff',
-            'fg_color': '#ffffffff',
+            'bg_color': '#ffffffff',
+            'fg_color': '#000000ff',
             'hl_color': '#ff0000ff',
-            'context_color': '#ffffffff',
+            'context_color': '#aaaaaaff',
             'text_size': '100',
             'default_path': self.user_data_dir,
             'show_context': True,
