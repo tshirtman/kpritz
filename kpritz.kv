@@ -6,6 +6,8 @@
 #:import color_from_hex kivy.utils.get_color_from_hex
 #:import abspath os.path.basename
 
+#:set button_height '48dp'
+
 <WordPart@ColoredLabel>:
     size_hint: None, None
     size: root.texture_size
@@ -159,7 +161,7 @@ BoxLayout:
 #                        } for x in app.config .options('books')])
 #                BoxLayout:
 #                    size_hint_y: None
-#                    height: '30sp'
+#                    height: button_height
 #                    Button:
 #                        text: 'open'
 #                        on_press:
@@ -180,7 +182,7 @@ BoxLayout:
 
                 BoxLayout:
                     size_hint_y: None
-                    height: '30sp'
+                    height: button_height
                     Button:
                         text: 'open'
                         disabled: not fc.selection
@@ -202,7 +204,7 @@ BoxLayout:
 
         BoxLayout:
             size_hint_y: None
-            height: '30sp'
+            height: button_height
             Button:
                 text: 'select current dir as default path'
                 on_press:
@@ -217,7 +219,7 @@ BoxLayout:
 <ColorButton@Button>:
     target: ''
     size_hint_y: None
-    height:'30sp'
+    height:button_height
     canvas.after:
         Color:
             rgba:
@@ -247,7 +249,7 @@ BoxLayout:
 
         BoxLayout:
             size_hint_y: None
-            height: '30sp'
+            height: button_height
             Button:
                 text: 'ok'
                 on_press:
@@ -261,7 +263,7 @@ BoxLayout:
 
 <SettingsLabel@Label>:
     size_hint_y: None
-    height: '30sp'
+    height: button_height
 
 <TextSettings@Popup>:
     size_hint: .9, .9
@@ -272,11 +274,11 @@ BoxLayout:
         cols: 2
         Label:
             size_hint_y: None
-            height: '30sp'
+            height: button_height
             text: 'text size'
         Slider:
             size_hint_y: None
-            height: '30sp'
+            height: button_height
             min: 10
             max: 500
             value: app.config .getfloat('settings', 'text_size')
@@ -302,30 +304,30 @@ BoxLayout:
 
         SettingsLabel:
             size_hint_y: None
-            height: '30sp'
+            height: button_height
             text: 'default path'
         Button:
             size_hint_y: None
-            height: '30sp'
+            height: button_height
             text: app.config .get('settings', 'default_path')
             on_press: Factory.PathSelector().open()
 
         SettingsLabel:
             size_hint_y: None
-            height: '30sp'
+            height: button_height
             text: 'show context'
         Switch:
             size_hint_y: None
-            height: '30sp'
+            height: button_height
             active: app.config .getboolean('settings', 'show_context')
             on_active: app.config.set('settings', 'show_context', self.active)
         Label:
             size_hint_y: None
-            height: '30sp'
+            height: button_height
             text: 'context lenght: %.2f' % app.config .getint('settings', 'context_lenght')
         Slider:
             size_hint_y: None
-            height: '30sp'
+            height: button_height
             min: 10
             max: 200
             value: app.config .getint('settings', 'context_lenght')
@@ -333,11 +335,11 @@ BoxLayout:
             step: 1
         Label:
             size_hint_y: None
-            height: '30sp'
+            height: button_height
             text: 'context font size: %.2f' % app.config .getfloat('settings', 'context_font_size')
         Slider:
             size_hint_y: None
-            height: '30sp'
+            height: button_height
             min: 10
             max: 50
             value: app.config .getfloat('settings', 'context_font_size')
@@ -354,7 +356,7 @@ BoxLayout:
 
         Widget:
             size_hint_y: None
-            height: '30sp'
+            height: button_height
             id: span
             Button:
                 text: 'close'
