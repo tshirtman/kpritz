@@ -43,7 +43,7 @@ BoxLayout:
             text:
                 ' '.join(
                 app.text[max(0, app.position - app.config .getint('settings', 'context_lenght')):app.position]
-                ) if app.config .getboolean('settings', 'show_context') else ''
+                ) if app.config .getboolean('settings', 'show_context') and play.state == 'normal' else ''
             y: center_label.top
 
         WordPart:
@@ -77,7 +77,7 @@ BoxLayout:
             text:
                 ' '.join(
                 app.text[app.position + 1:app.position + app.config .getint('settings', 'context_lenght')]
-                ) if app.config .getboolean('settings', 'show_context') else ''
+                ) if app.config .getboolean('settings', 'show_context') and play.state == 'normal' else ''
             top: center_label.y
             size_hint: 1, None
 
@@ -105,6 +105,7 @@ BoxLayout:
                 on_press: app.previous()
                 disabled: app.position == 0
         ImageButton:
+            id: play
             source: 'play.png'
             on_press: app.play()
             on_release: app.pause()
@@ -270,99 +271,100 @@ BoxLayout:
     title: 'text settings'
     opacity: .8
 
-    GridLayout:
-        cols: 2
-        Label:
-            size_hint_y: None
-            height: button_height
-            text: 'text size'
-        Slider:
-            size_hint_y: None
-            height: button_height
-            min: 10
-            max: 500
-            value: app.config .getfloat('settings', 'text_size')
-            on_value: app.config.set('settings', 'text_size', self.value)
+    BoxLayout:
+        orientation: 'vertical'
+        ScrollView:
+            GridLayout:
+                size_hint_y: None
+                height: self.minimum_height
+                cols: 2
+                Label:
+                    size_hint_y: None
+                    height: button_height
+                    text: 'text size'
+                Slider:
+                    size_hint_y: None
+                    height: button_height
+                    min: 10
+                    max: 500
+                    value: app.config .getfloat('settings', 'text_size')
+                    on_value: app.config.set('settings', 'text_size', self.value)
 
-        SettingsLabel:
-            text: 'background color'
+                SettingsLabel:
+                    text: 'background color'
 
-        ColorButton:
-            target: 'bg_color'
+                ColorButton:
+                    target: 'bg_color'
 
-        SettingsLabel:
-            text: 'foreground color'
+                SettingsLabel:
+                    text: 'foreground color'
 
-        ColorButton:
-            target: 'fg_color'
+                ColorButton:
+                    target: 'fg_color'
 
-        SettingsLabel:
-            text: 'highlight color'
+                SettingsLabel:
+                    text: 'highlight color'
 
-        ColorButton:
-            target: 'hl_color'
+                ColorButton:
+                    target: 'hl_color'
 
-        SettingsLabel:
-            size_hint_y: None
-            height: button_height
-            text: 'default path'
+                SettingsLabel:
+                    size_hint_y: None
+                    height: button_height
+                    text: 'default path'
+                Button:
+                    size_hint_y: None
+                    height: button_height
+                    text: app.config .get('settings', 'default_path')
+                    on_press: Factory.PathSelector().open()
+
+                SettingsLabel:
+                    size_hint_y: None
+                    height: button_height
+                    text: 'show context on pause'
+                Switch:
+                    size_hint_y: None
+                    height: button_height
+                    active: app.config .getboolean('settings', 'show_context')
+                    on_active: app.config.set('settings', 'show_context', self.active)
+                Label:
+                    size_hint_y: None
+                    height: button_height
+                    text: 'context lenght: %.2f' % app.config .getint('settings', 'context_lenght')
+                Slider:
+                    size_hint_y: None
+                    height: button_height
+                    min: 10
+                    max: 200
+                    value: app.config .getint('settings', 'context_lenght')
+                    on_value: app.config.set('settings', 'context_lenght', int(self.value))
+                    step: 1
+                Label:
+                    size_hint_y: None
+                    height: button_height
+                    text: 'context font size: %.2f' % app.config .getfloat('settings', 'context_font_size')
+                Slider:
+                    size_hint_y: None
+                    height: button_height
+                    min: 10
+                    max: 50
+                    value: app.config .getfloat('settings', 'context_font_size')
+                    on_value: app.config.set('settings', 'context_font_size', self.value)
+
+                SettingsLabel:
+                    text: 'context color'
+
+                ColorButton:
+                    target: 'context_color'
+
+                Widget:
+                Widget:
+
         Button:
+            text: 'close'
             size_hint_y: None
             height: button_height
-            text: app.config .get('settings', 'default_path')
-            on_press: Factory.PathSelector().open()
-
-        SettingsLabel:
-            size_hint_y: None
-            height: button_height
-            text: 'show context'
-        Switch:
-            size_hint_y: None
-            height: button_height
-            active: app.config .getboolean('settings', 'show_context')
-            on_active: app.config.set('settings', 'show_context', self.active)
-        Label:
-            size_hint_y: None
-            height: button_height
-            text: 'context lenght: %.2f' % app.config .getint('settings', 'context_lenght')
-        Slider:
-            size_hint_y: None
-            height: button_height
-            min: 10
-            max: 200
-            value: app.config .getint('settings', 'context_lenght')
-            on_value: app.config.set('settings', 'context_lenght', int(self.value))
-            step: 1
-        Label:
-            size_hint_y: None
-            height: button_height
-            text: 'context font size: %.2f' % app.config .getfloat('settings', 'context_font_size')
-        Slider:
-            size_hint_y: None
-            height: button_height
-            min: 10
-            max: 50
-            value: app.config .getfloat('settings', 'context_font_size')
-            on_value: app.config.set('settings', 'context_font_size', self.value)
-
-        SettingsLabel:
-            text: 'context color'
-
-        ColorButton:
-            target: 'context_color'
-
-        Widget:
-        Widget:
-
-        Widget:
-            size_hint_y: None
-            height: button_height
-            id: span
-            Button:
-                text: 'close'
-                pos: span.pos
-                size: span.parent.width, span.height
-                on_press: root.dismiss()
+            on_press: root.dismiss()
 
 <ImageButton@Button>:
     source: ''
