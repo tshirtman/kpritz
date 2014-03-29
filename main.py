@@ -38,7 +38,7 @@ class Kpritz(App):
     def build_config(self, config):
         config.setdefaults('settings', {
             'speed': '250',
-            'lastbook': '',
+            'lastbook': 'welcome.txt',
             'bg_color': '#000000ff',
             'fg_color': '#ffffffff',
             'hl_color': '#ff0000ff',

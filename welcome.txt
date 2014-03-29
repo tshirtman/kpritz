@@ -1,0 +1,24 @@
+Welcome to kpritz. Kpritz is a fast reading app with a strong focus on
+ease of use and customizability.
+
+To use kpritz is easy. The first thing you want to do is to press the
+"play" button to go forward. The text flows as long as you keep the
+button pressed, pausing is as easy as releasing it! You can also go to
+previous or next word or to previous or next sentence, with the buttons
+left and right of "play".
+
+To open a text to read, press the leftmost button at the bottom of your
+interface, this will bring you to a menu allowing to select from a
+variety of sources. Among them, you can select from internal memory or
+directly from recent readings. Kpritz keep your last position in a file
+for next opening.
+
+You can change the reading speed uring the "plus" and "minus" buttons,
+the current speed is indicated aside these buttons.
+
+The rightmost buttons allows configuring the application. A lot of
+things can be configured, text size, color, and the default path to open
+when browsing for a document.
+
+Kpritz is able to read multiple type of documets, currently flat text,
+epub and html are supported. More sources are planned to be added soon.
