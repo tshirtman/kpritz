@@ -11,7 +11,7 @@ from kivy.properties import (
 from kivy.clock import Clock
 from kivy.factory import Factory
 from ConfigParser import NoOptionError
-from os.path import join
+from os.path import join, abspath
 from epub2txt import dump
 import html2text
 
@@ -62,7 +62,7 @@ class Kpritz(App):
 
     def save_position(self):
         if self.bookname:
-            self.config.set('books', self.bookname, self.position)
+            self.config.set('books', abspath(self.bookname), self.position)
 
     def get_words(self):
         f = self.bookname
@@ -85,7 +85,7 @@ class Kpritz(App):
                 return fd.read().split()
 
     def open(self, path='', filename=None):
-        if self.position:
+        if self.bookname:
             self.save_position()
 
         if filename:

@@ -4,7 +4,7 @@
 #:import log10 math.log10
 #:import hex_from_color kivy.utils.get_hex_from_color
 #:import color_from_hex kivy.utils.get_color_from_hex
-#:import abspath os.path.basename
+#:import basename os.path.basename
 
 #:set button_height '48dp'
 
@@ -25,17 +25,11 @@ BoxLayout:
 
     FloatLayout:
         canvas.before:
-            Color:
-                rgba: color_from_hex(app.config .get('settings', 'bg_color'))
             Rectangle:
                 pos: self.pos
                 size: self.size
         id: label_container
         Label:
-            canvas.before:
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
             size_hint: 1, None
             text_size: self.width, None
             font_size: app.config .getfloat('settings', 'context_font_size')
@@ -77,9 +71,10 @@ BoxLayout:
             top: center_label.y
             size_hint: 1, None
 
-    ColoredLabel:
+    Label:
         text:
-            '%d / %d (%2d%%)' % (
+            '%s  %d / %d (%2d%%)' % (
+            basename(app.config .get('settings', 'lastbook')),
             app.position, len(app.text),
             100. * app.position / len(app.text)) if app.text else ''
         size_hint_y: None
@@ -144,31 +139,36 @@ BoxLayout:
     size_hint: .9, .9
     TabbedPanel:
         do_default_tab: False
-#        TabbedPanelItem:
-#            text: 'Recent'
-#            BoxLayout:
-#                orientation: 'vertical'
-#                ListView:
-#                    adapter:
-#                        Factory.ListAdapter(
-#                        cls=Factory.ToggleButton,
-#                        data=[{
-#                        'text': abspath(x),
-#                        'group': 'book',
-#                        } for x in app.config .options('books')])
-#                BoxLayout:
-#                    size_hint_y: None
-#                    height: button_height
-#                    Button:
-#                        text: 'open'
-#                        on_press:
-#                            app.open(recent_list.selection)
-#                    Button:
-#                        text: 'cancel'
-#                        on_press:
-#                            root.dismiss()
-#                            root.dismiss()
-#
+        TabbedPanelItem:
+            text: 'Recent'
+            BoxLayout:
+                orientation: 'vertical'
+                ListView:
+                    adapter:
+                        Factory.ListAdapter(
+                        cls=Factory.ListItemButton,
+                        args_converter=lambda i, x: {
+                        'text': '%s (%s)' % (basename(x), abspath(x)),
+                        'group': 'book',
+                        'size_hint_y': None,
+                        'height': button_height,
+                        'deselected_color': (1, 1, 1, 1),
+                        'selected_color': (1, 1, 1, 1),
+                        'on_release': lambda *args: app.open(filename=abspath(x)) or root.dismiss(),
+                        },
+                        data=app.config .options('books'))
+                BoxLayout:
+                    size_hint_y: None
+                    height: button_height
+                    Button:
+                        text: 'open'
+                        on_press:
+                            app.open(recent_list.selection)
+                    Button:
+                        text: 'cancel'
+                        on_press:
+                            root.dismiss()
+
         TabbedPanelItem:
             text: "Browse"
             BoxLayout:
