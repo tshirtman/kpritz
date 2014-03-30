@@ -46,7 +46,7 @@ class Kpritz(App):
             'text_size': '100',
             'default_path': self.user_data_dir,
             'show_context': True,
-            'context_lenght': 100,
+            'context_lenght': 50,
             'context_font_size': 20,
             })
         config.add_section('books')
