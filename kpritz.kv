@@ -7,12 +7,13 @@
 #:import basename os.path.basename
 
 #:set button_height '48dp'
+#:set context_margins 30
 
 <WordPart@ColoredLabel>:
     size_hint: None, None
     size: root.texture_size
     font_size: '%dpt' % app.config .getfloat('settings', 'text_size')
-    center_y: self.parent.center_y
+    center_y: self.size and self.parent and self.parent.center_y
 
 <ResponsiveGrid@BoxLayout>:
     size_hint_x: 1 if app.vertical else 2
@@ -31,7 +32,7 @@ BoxLayout:
         id: label_container
         Label:
             size_hint: 1, None
-            text_size: self.width, None
+            text_size: self.width - context_margins, None
             font_size: app.config .getfloat('settings', 'context_font_size')
             color: color_from_hex(app.config .get('settings', 'context_color'))
             text:
@@ -61,7 +62,7 @@ BoxLayout:
                 if len(root.word) > root.index else '')
 
         Label:
-            text_size: self.width, None
+            text_size: self.width - context_margins, None
             font_size: app.config .getfloat('settings', 'context_font_size')
             color: color_from_hex(app.config .get('settings', 'context_color'))
             text:
