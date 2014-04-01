@@ -34,7 +34,7 @@ def authorize(platform):
     def web_redirect():
         print "redirect called"
         finish_authorize(platform, code)
-        #raise Exception
+        return "app authorized, you can close this tab"
     threading.Thread(target=run).run()
 
 
