@@ -50,5 +50,20 @@ def finish_authorize(platform, code, callback):
     callback(API_KEYS[platform], result["access_token"], result["username"])
 
 
+def list_items(api_key, token, **kwargs):
+    args = kwargs.copy()
+    args.update({
+        "consumer_key": api_key,
+        "access_token": token})
+
+    req = urllib2.Request(
+        BASE_URL + 'v3/get',
+        json.dumps(args),
+        {"Content-Type": "application/json", "X-Accept": "application/json"})
+
+    result = urllib2.urlopen(req).read()
+    return json.loads(result)["list"]
+
+
 def sync():
     pass
